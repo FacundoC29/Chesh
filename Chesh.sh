@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#ASSETS
+
+source "$(dirname "${BASH_SOURCE[0]}")/assets/sprites.sh"
+
+
 #paste -d '' <(cat piezasP.txt) <(cat piezasP.txt)
 
 #DECLARO LA "MATRIZ" DEL TABLERO INICIAL
@@ -749,15 +754,28 @@ renderizarTfor(){
 				done			
 			fi
 
-		paste -d '' <(cat ${rFila[0]}) <(cat ${rFila[1]}) <(cat ${rFila[2]}) <(cat ${rFila[3]}) <(cat ${rFila[4]}) <(cat ${rFila[5]}) <(cat ${rFila[6]}) <(cat ${rFila[7]})   	
-
+	paste -d '' \
+    <(printf '%s\n' "${sprites[${rFila[0]}]}") \
+    <(printf '%s\n' "${sprites[${rFila[1]}]}") \
+    <(printf '%s\n' "${sprites[${rFila[2]}]}") \
+    <(printf '%s\n' "${sprites[${rFila[3]}]}") \
+    <(printf '%s\n' "${sprites[${rFila[4]}]}") \
+    <(printf '%s\n' "${sprites[${rFila[5]}]}") \
+    <(printf '%s\n' "${sprites[${rFila[6]}]}") \
+    <(printf '%s\n' "${sprites[${rFila[7]}]}")
 		#done
 }
 #EMPIEZA EL MAIN
 
-paste -d '' <(cat titleC) 
+printf '\033[2J\033[3J\033[H' #hace lo mismo que un clear pero funciona mejor con el historial de la terminal, y ademas no hace que se mueva el cursor a la esquina superior izquierda, sino que lo deja en la posicion en la que estaba antes del clear
+
+printf '%s\n' "${sprites[titleC]}" | expand -t 4
+while IFS= read -r linea; do
+    printf '%40s%s\n' '' "$linea"
+done <<< "${sprites[Dama]}"
 read -sn1 start
-clear
+
+printf '\033[2J\033[3J\033[H'
 
 turno=0
 muevenB=true
