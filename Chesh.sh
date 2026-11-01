@@ -5,6 +5,16 @@
 source "$(dirname "${BASH_SOURCE[0]}")/assets/sprites.sh"
 
 
+rCols=370
+rLines=91
+
+if [[ $(tput cols) -lt $rCols || $(tput lines) -lt $rLines ]]; then
+	echo "La resolución de la terminal es demasiado pequeña para ejecutar el juego. Se recomienda una resolución de al menos ${rCols}x${rLines} (columnas x filas)."
+	exit 1
+fi
+
+
+
 #paste -d '' <(cat piezasP.txt) <(cat piezasP.txt)
 
 #DECLARO LA "MATRIZ" DEL TABLERO INICIAL
@@ -138,6 +148,25 @@ done
 #junto los contenidos de cada fila en una variable auxiliar para catearlos todos de una
 #cuando termine la fila, cambia el for de arriba y el siguiente cat se va a hacer en otra fila
 
+
+
+dibujarDerecha() {
+    local nombre="$1"
+    local columna="$2"
+    local fila=1
+    local linea
+    local arte="${iconos[$nombre]}"
+
+    printf '\033[s'
+
+    while IFS= read -r linea || [[ -n "$linea" ]]; do
+        printf '\033[%d;%dH%s' "$fila" "$columna" "$linea"
+        ((fila++))
+    done <<< "$arte"
+
+    printf '\033[u'
+}
+
 function renderizarT() {
 	
 	clear
@@ -151,10 +180,14 @@ function renderizarT() {
 		done
 	fi
 	
+	dibujarDerecha tuxConcentrado 180
 }
+
+
 #Funcion de mover las piezas
 #Dentro actua como un menu para ver que piezas se pueden o se tienen que mover
 mover(){
+
 	echo "Que pieza quieres mover? (selecciona la casilla en la que se encuentra)"
 	read cselect
 	echo "A que casilla quieres moverla?"
@@ -766,6 +799,8 @@ renderizarTfor(){
 		#done
 }
 #EMPIEZA EL MAIN
+
+
 
 printf '\033[2J\033[3J\033[H' #hace lo mismo que un clear pero funciona mejor con el historial de la terminal, y ademas no hace que se mueva el cursor a la esquina superior izquierda, sino que lo deja en la posicion en la que estaba antes del clear
 
